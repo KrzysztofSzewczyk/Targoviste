@@ -64,26 +64,19 @@ targoviste_archive readArchive(char * file, int *error) {
 	if(!f)
         return (*error = 1, archive);
     
-    if(fgetc(f)=='T' && fgetc(f)=='A' && fgetc(f)=='R');
-    else
+    if(fgetc(f)!='T' || fgetc(f)!='A' || fgetc(f)!='R')
         return (*error = 3, archive);
 	
 	size = readi(f);
 	archive.amount = size;
-	
+
 	#ifndef CAST_MALLOC
-    	archive.files = calloc(sizeof(targoviste_file), size);
-	#else
-		archive.files = (targoviste_file *) calloc(sizeof(targoviste_file), size);
-	#endif
-	
-	#ifndef CAST_MALLOC
+        archive.files = calloc(sizeof(targoviste_file), size);
     	startOffsets = calloc(sizeof(int), size);
 	#else
+        archive.files = (targoviste_file *) calloc(sizeof(targoviste_file), size);
 		startOffsets = calloc(sizeof(int), size);
 	#endif
-	
-    
 	
 	for(i = 0; i < size; i++) {
 		#ifndef CAST_MALLOC
