@@ -5,18 +5,14 @@
 #include <string.h>
 
 int writeArchive(targoviste_archive archive, char * file) {
-    FILE * f;
-    int i = 0;
-    int totalSize = 0;
-
-    f = fopen(file, "wb");
-    if(!f) return -1;
+    FILE * f = fopen(file, "wb");
+    int i = 0, totalSize = 0;
+    if(!f) return 1;
     
     fprintf(f, "TAR%d%c", archive.amount, 0);
     
     for(i = 0; i < archive.amount; i++, totalSize += archive.files[i].size) {
-        fwrite(archive.files[i].name, 1, strlen(archive.files[i].name), f);
-        fputc(0, f);
+        fwrite(archive.files[i].name, 1, strlen(archive.files[i].name)+1, f);
         fprintf(f, "%d%c%d%c", totalSize, 0, archive.files[i].size, 0);
     }
     
@@ -41,16 +37,12 @@ targoviste_archive readArchive(char * file, int *error) {
 	char * nbuf, * fbuf;
 	
 	f = fopen(file, "rb");
-	if(!f) {
-		*error=1;
-		return archive;
-	}
+	if(!f)
+        return (*error = 1, archive);
     
     if(fgetc(f)=='T' && fgetc(f)=='A' && fgetc(f)=='R');
-    else {
-        *error = 3;
-        return archive;
-    }
+    else
+        return (*error = 3, archive);
 	
 	size = readi(f);
 	archive.amount = size;
@@ -75,10 +67,8 @@ targoviste_archive readArchive(char * file, int *error) {
 		#else
 			nbuf = (char *) malloc(MAX_FILENAME_LEN);
 		#endif
-		if(!nbuf) {
-			*error = 2;
-			return archive;
-		}
+		if(!nbuf)
+            return (*error = 2, archive);
 		fscanf(f, "%[^\0]s", nbuf);
 		fgetc(f);
 		archive.files[i].name = nbuf;
