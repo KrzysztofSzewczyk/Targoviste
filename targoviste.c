@@ -12,16 +12,12 @@ int writeArchive(targoviste_archive archive, char * file) {
     f = fopen(file, "wb");
     if(!f) return -1;
     
-    fprintf(f, "TAR");
+    fprintf(f, "TAR%d%c", archive.amount, 0);
     
-    fprintf(f, "%d%c", archive.amount, 0);
-    
-    for(i = 0; i < archive.amount; i++) {
+    for(i = 0; i < archive.amount; i++, totalSize += archive.files[i].size) {
         fwrite(archive.files[i].name, 1, strlen(archive.files[i].name), f);
         fputc(0, f);
-        fprintf(f, "%d%c", totalSize, 0);
-        fprintf(f, "%d%c", archive.files[i].size, 0);
-        totalSize += archive.files[i].size;
+        fprintf(f, "%d%c%d%c", totalSize, 0, archive.files[i].size, 0);
     }
     
     for(i = 0; i < archive.amount; i++)
