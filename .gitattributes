@@ -1,2 +1,4 @@
 # Auto detect text files and perform LF normalization
 * text=auto
+# I hate my project being marked by linguist as Bash project.
+*.sh linguist-detectable=true
