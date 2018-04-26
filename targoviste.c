@@ -81,11 +81,11 @@ static char * readString(FILE * f, int maxSize, char delim) {
  *  returns: number that was read from stream.
  */
 static int readi(FILE * f) {
-	char * s;
+    char * s;
     int num;
     s = readString(f, 16, 0);
-	fgetc(f);
-	num = atoi(s);
+    fgetc(f);
+    num = atoi(s);
     free(s);
     return num;
 }
@@ -144,62 +144,62 @@ int writeArchive(targoviste_archive archive, char * file) {
  *  returns: archive read.
  */
 targoviste_archive readArchive(char * file, int *error) {
-	FILE * f;
-	targoviste_archive archive;
-	int size, i, j, hst, * startOffsets;
-	char * nbuf, * fbuf;
-	
-	f = fopen(file, "rb");
-	if(!f)
+    FILE * f;
+    targoviste_archive archive;
+    int size, i, j, hst, * startOffsets;
+    char * nbuf, * fbuf;
+    
+    f = fopen(file, "rb");
+    if(!f)
         return (*error = 1, archive);
     
     if(fgetc(f)!='T' || fgetc(f)!='A' || fgetc(f)!='R')
         return (*error = 3, archive);
-	
-	size = readi(f);
-	archive.amount = size;
+    
+    size = readi(f);
+    archive.amount = size;
 
-	#ifndef CAST_MALLOC
+    #ifndef CAST_MALLOC
         archive.files = calloc(sizeof(targoviste_file), size);
-    	startOffsets = calloc(sizeof(int), size);
-	#else
+        startOffsets = calloc(sizeof(int), size);
+    #else
         archive.files = (targoviste_file *) calloc(sizeof(targoviste_file), size);
-		startOffsets = (int *) calloc(sizeof(int), size);
-	#endif
-	
-	for(i = 0; i < size; i++) {
-		#ifndef CAST_MALLOC
-			nbuf = malloc(MAX_FILENAME_LEN);
-		#else
-			nbuf = (char *) malloc(MAX_FILENAME_LEN);
-		#endif
-		if(!nbuf)
+        startOffsets = (int *) calloc(sizeof(int), size);
+    #endif
+    
+    for(i = 0; i < size; i++) {
+        #ifndef CAST_MALLOC
+            nbuf = malloc(MAX_FILENAME_LEN);
+        #else
+            nbuf = (char *) malloc(MAX_FILENAME_LEN);
+        #endif
+        if(!nbuf)
             return (fclose(f), *error = 2, archive);
-		nbuf = readString(f, MAX_FILENAME_LEN, 0);
-		fgetc(f);
-		archive.files[i].name = nbuf;
-		startOffsets[i] = readi(f)+3;
-		archive.files[i].size = readi(f);
-	}
-	
-	hst = ftell(f);
-	
-	for(j = 0; j < size; j++) {
-		#ifndef CAST_MALLOC
-			fbuf = malloc(archive.files[j].size);
-		#else
-			fbuf = (char *) malloc(archive.files[j].size);
-		#endif
-		if(!fbuf)
+        nbuf = readString(f, MAX_FILENAME_LEN, 0);
+        fgetc(f);
+        archive.files[i].name = nbuf;
+        startOffsets[i] = readi(f)+3;
+        archive.files[i].size = readi(f);
+    }
+    
+    hst = ftell(f);
+    
+    for(j = 0; j < size; j++) {
+        #ifndef CAST_MALLOC
+            fbuf = malloc(archive.files[j].size);
+        #else
+            fbuf = (char *) malloc(archive.files[j].size);
+        #endif
+        if(!fbuf)
             return (fclose(f), *error = 4, archive);
-		fseek(f, hst+startOffsets[j], SEEK_SET);
-		fread(fbuf, archive.files[j].size, 1, f);
-		archive.files[j].buffer = fbuf;
-	}
-	
-	fclose(f);
+        fseek(f, hst+startOffsets[j], SEEK_SET);
+        fread(fbuf, archive.files[j].size, 1, f);
+        archive.files[j].buffer = fbuf;
+    }
+    
+    fclose(f);
     *error = 0;
-	return archive;
+    return archive;
 }
 
 /*
@@ -248,27 +248,27 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     
     char * filenameBuffer;
     char * contentBuffer;
-	
-	f = fopen(filename, "rb");
-	if(!f)
+    
+    f = fopen(filename, "rb");
+    if(!f)
         return 1;
     
     if(fgetc(f)!='T' || fgetc(f)!='A' || fgetc(f)!='R')
         return 3;
-	
-	readi(f);
+    
+    readi(f);
 
     for(i = 0; i < size; i++) {
         #ifndef CAST_MALLOC
-			filenameBuffer = malloc(MAX_FILENAME_LEN);
-		#else
-			filenameBuffer = (char *) malloc(MAX_FILENAME_LEN);
-		#endif
+            filenameBuffer = malloc(MAX_FILENAME_LEN);
+        #else
+            filenameBuffer = (char *) malloc(MAX_FILENAME_LEN);
+        #endif
         
         if(!filenameBuffer) return 2;
         
         filenameBuffer = readString(f, MAX_FILENAME_LEN, 0);
-		fgetc(f);
+        fgetc(f);
         
         if(!strcmp(filename, filenameBuffer)) break;
         readi(f); readi(f);
@@ -277,15 +277,15 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     startOffset = readi(f) + 3;
     size = readi(f);
     #ifndef CAST_MALLOC
-		contentBuffer = malloc(size);
-	#else
-		contentBuffer = (char *) malloc(size);
-	#endif
+        contentBuffer = malloc(size);
+    #else
+        contentBuffer = (char *) malloc(size);
+    #endif
     if(!contentBuffer) return 4;
     fseek(f, startOffset, SEEK_SET);
     fread(contentBuffer, size, 1, f);
     file->size = size;
     file->name = filenameBuffer;
     file->buffer = contentBuffer;
-	return 0;
+    return 0;
 }
