@@ -31,4 +31,6 @@ gcc -I. -L. examples/write.c -o examples/write -ltargoviste
 
 echo "Build done!"
 
+read -p "Press any key to continue... " -n1 -s
+
 exit 0

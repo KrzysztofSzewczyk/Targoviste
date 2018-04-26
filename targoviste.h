@@ -40,8 +40,77 @@ typedef struct {
     int amount;
 } targoviste_archive;
 
+/*
+ * Function:  writeArchive
+ * --------------------
+ * This function is writing targoviste_archive structure to
+ * specified filename. 
+ * 
+ *  archive: instance of targoviste_archive structure that
+ *           needs to be written.
+ *  file: file to write to.
+ *
+ *  returns: 1 on failure, 0 on success.
+ */
 int writeArchive(targoviste_archive archive, char * file);
+
+
+/*
+ * Function:  readArchive
+ * --------------------
+ * This function is reading whole targoviste_archive structure from
+ * specified filename. 
+ *
+ *  file: file to write to.
+ *  error: pointer to integer variable, which will be changed in
+ *         case of error to either:
+ *            0 (everything fine)
+ *            1 (file could not be opened)
+ *            2 (out of memory)
+ *            3 (invalid header)
+ *            4 (out of memory)
+ *
+ *  returns: archive read.
+ */
 targoviste_archive readArchive(char * file, int *error);
-void cleanArchive(targoviste_archive archive);
+
+
+/*
+ * Function:  loadFileFromArchive
+ * --------------------
+ * This function is loading single file from specified archive file.
+ *
+ *  file: target file
+ *  filename: name of archive
+ *
+ *  returns: integer variable, which will be changed in
+ *           case of error to either:
+ *             0 (everything fine)
+ *             1 (file could not be opened)
+ *             2 (out of memory)
+ *             3 (invalid header)
+ *             4 (out of memory)
+ */
+int loadFileFromArchive(targoviste_file * file, char * filename);
+
+
+/*
+ * Function:  freeArchive
+ * --------------------
+ * This function is reading whole targoviste_archive structure from
+ * specified filename. 
+ *
+ *  file: file to write to.
+ *  error: pointer to integer variable, which will be changed in
+ *         case of error to either:
+ *            0 (everything fine)
+ *            1 (file could not be opened)
+ *            2 (out of memory)
+ *            3 (invalid header)
+ *            4 (out of memory)
+ *
+ *  returns: archive read.
+ */
+void freeArchive(targoviste_archive archive);
 
 #endif
