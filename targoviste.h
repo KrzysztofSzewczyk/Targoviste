@@ -113,4 +113,22 @@ int loadFileFromArchive(targoviste_file * file, char * filename);
  */
 void freeArchive(targoviste_archive archive);
 
+/*
+ * Function:  listFilesArchive
+ * --------------------
+ * This function is listing all files in archive,
+ *
+ *  path: path to archive
+ *  error: pointer to integer variable, which will be changed in
+ *         case of error to either:
+ *            0 (everything fine)
+ *            1 (file could not be opened)
+ *            2 (out of memory)
+ *            3 (invalid header)
+ *
+ *  returns: array of files. Warning: files have buffer set as NULL!
+ *           on error, NULL is returned!
+ */
+targoviste_file * listFilesArchive(char * path, int * error);
+
 #endif

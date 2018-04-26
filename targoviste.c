@@ -108,9 +108,9 @@ static int readi(FILE * f) {
  *  returns: 1 on failure, 0 on success.
  */
 int writeArchive(targoviste_archive archive, char * file) {
-    FILE * f = fopen(file, "wb");
+    FILE * f;
     int i = 0, totalSize = 0;
-    if(!f) return 1;
+    if(!(f = fopen(file, "wb"))) return 1;
     
     fprintf(f, "TAR%d%c", archive.amount, 0);
     
@@ -146,7 +146,7 @@ int writeArchive(targoviste_archive archive, char * file) {
 targoviste_archive readArchive(char * file, int *error) {
     FILE * f;
     targoviste_archive archive;
-    int size, i, j, hst, * startOffsets;
+    int size, i, j, header_end, * startOffsets;
     char * nbuf, * fbuf;
     
     f = fopen(file, "rb");
@@ -182,7 +182,7 @@ targoviste_archive readArchive(char * file, int *error) {
         archive.files[i].size = readi(f);
     }
     
-    hst = ftell(f);
+    header_end = ftell(f);
     
     for(j = 0; j < size; j++) {
         #ifndef CAST_MALLOC
@@ -192,7 +192,7 @@ targoviste_archive readArchive(char * file, int *error) {
         #endif
         if(!fbuf)
             return (fclose(f), *error = 4, archive);
-        fseek(f, hst+startOffsets[j], SEEK_SET);
+        fseek(f, header_end+startOffsets[j], SEEK_SET);
         fread(fbuf, archive.files[j].size, 1, f);
         archive.files[j].buffer = fbuf;
     }
@@ -288,4 +288,57 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     file->name = filenameBuffer;
     file->buffer = contentBuffer;
     return 0;
+}
+
+/*
+ * Function:  listFilesArchive
+ * --------------------
+ * This function is listing all files in archive,
+ *
+ *  path: path to archive
+ *  error: pointer to integer variable, which will be changed in
+ *         case of error to either:
+ *            0 (everything fine)
+ *            1 (file could not be opened)
+ *            2 (out of memory)
+ *            3 (invalid header)
+ *
+ *  returns: array of files. Warning: files have buffer set as NULL!
+ *           on error, NULL is returned!
+ */
+targoviste_file * listFilesArchive(char * path, int * error) {
+    FILE * f;
+    int amount, size, i;
+    char * filenameBuffer;
+    targoviste_file * files;
+    
+    f = fopen(path, "rb");
+    if(!f) return (*error = 1, NULL);
+    
+    amount = readi(f);
+    
+    #ifndef CAST_MALLOC
+        files = malloc(sizeof(targoviste_file) * amount);
+    #else
+        files = (targoviste_file *) malloc(sizeof(targoviste_file) * amount);
+    #endif
+    
+    for(i = 0; i < size; i++) {
+        #ifndef CAST_MALLOC
+            filenameBuffer = malloc(MAX_FILENAME_LEN);
+        #else
+            filenameBuffer = (char *) malloc(MAX_FILENAME_LEN);
+        #endif
+        
+        if(!filenameBuffer) return (*error = 2, NULL);
+        
+        filenameBuffer = readString(f, MAX_FILENAME_LEN, 0);
+        fgetc(f); readi(f); size = readi(f);
+        files[i].buffer = NULL;
+        files[i].size = size;
+        files[i].name = filenameBuffer;
+    }
+    
+    fclose(f);
+    return files;
 }
