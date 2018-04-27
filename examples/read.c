@@ -32,5 +32,5 @@ int main() {
     printf("Files in archive.tgx: %d\n", a.amount);
     for(; i < a.amount; i++)
         printf("%s - %d bytes\n", a.files[i].name, a.files[i].size);
-    freeArchive(a);
+    freeArchive(&a);
 }

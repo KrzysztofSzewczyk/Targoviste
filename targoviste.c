@@ -175,9 +175,9 @@ targoviste_archive readArchive(char * file, int * error) {
 
 void freeArchive(targoviste_archive * archive) {
     int i;
-    for(i = 0; i < archive.amount; i++)
-        free(archive.files[i].buffer),free(archive.files[i].name);
-    free(archive.files);
+    for(i = 0; i < archive->amount; i++)
+        free(archive->files[i].buffer),free(archive->files[i].name);
+    free(archive->files);
 }
 
 
