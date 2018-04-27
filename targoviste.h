@@ -120,8 +120,29 @@ void freeArchive(targoviste_archive * archive);
  */
 targoviste_file * listFilesArchive(char * path, int * error, int * amount);
 
+/*
+ * Function:  createArchive
+ * --------------------
+ * Returns new instance of targoviste_archive.
+ */
 targoviste_archive createArchive();
+
+/*
+ * Function:  createFile
+ * --------------------
+ * Returns new instance of targoviste_file.
+ */
 targoviste_file createFile();
+
+/*
+ * Function:  addFileToArchive
+ * --------------------
+ * Adds file to specified archive. Does either:
+ * 1. Allocate memory for 1 file (amount = 0)
+ * 2. Reallocate memory for n files (amount != 0)
+ *
+ * returns 0 on success and 1 on error.
+ */
 void addFileToArchive(targoviste_archive dest, targoviste_file src);
 
 #endif

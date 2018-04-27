@@ -286,7 +286,7 @@ int addFileToArchive(targoviste_archive dest, targoviste_file src) {
         #endif
         if(!dest.files) return 1;
         dest.files[0] = src;
-    } else if(dest.amount == dest.amount) {
+    } else {
         targoviste_file * copy = dest.files;
         #ifndef CAST_MALLOC
             dest.files = realloc(dest.files, sizeof(targoviste_file) * dest.amount);
@@ -295,11 +295,8 @@ int addFileToArchive(targoviste_archive dest, targoviste_file src) {
         #endif
         if(!dest.files) return 1;
         dest.files[dest.amount++] = src;
-    } else {
-        dest.files[dest.amount++] = src;
-        return 0;
     }
-    return 2;
+    return 0;
 }
 
 /** *** End: External functions *** */
