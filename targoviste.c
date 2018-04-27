@@ -89,6 +89,21 @@ static int readi(FILE * f) {
     return num;
 }
 
+/*
+ * Function:  fileToArchive
+ * --------------------
+ * Writes targoviste_file header to archive.
+ *
+ *  archive: file handle
+ *  file: targoviste_file to be saved.
+ *  totalSize: total size of files.
+ *
+ *  returns: nothing
+ */
+static void fileToArchive(FILE * archive, targoviste_file file, int totalSize) {
+    fprintf(archive, "%s%c%d%c%d%c", file.name, 0, totalSize, 0, file.size, 0);
+}
+
 /* *** End: Internal functions *** */
 
 /* *** External functions *** */
@@ -100,10 +115,8 @@ int writeArchive(targoviste_archive archive, char * file) {
     
     fprintf(f, "TAR%d%c", archive.amount, 0);
     
-    for(i = 0; i < archive.amount; i++, totalSize += archive.files[i].size) {
-        fwrite(archive.files[i].name, 1, strlen(archive.files[i].name)+1, f);
-        fprintf(f, "%d%c%d%c", totalSize, 0, archive.files[i].size, 0);
-    }
+    for(i = 0; i < archive.amount; i++, totalSize += archive.files[i].size)
+        fileToArchive(f, archive.files[i], totalSize);
     
     for(i = 0; i < archive.amount; i++)
         fwrite(archive.files[i].buffer, 1, archive.files[i].size, f);
@@ -178,8 +191,7 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     FILE * f;
     int i, size, startOffset;
     
-    char * filenameBuffer;
-    char * contentBuffer;
+    char * filenameBuffer, * contentBuffer;
     
     f = fopen(filename, "rb");
     if(!f)
