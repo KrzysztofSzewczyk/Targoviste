@@ -1,11 +1,11 @@
 # Targoviste
 
-Targoviste is simple library which aim is archiving multiple files into one archive file.
-Targoviste is implementing it's unique archive format. It's really simple. Please check examples folder for examples of use.
-![Diagram](https://raw.githubusercontent.com/KrzysztofSzewczyk/Targoviste/master/archiveformat.jpg)
+Targoviste is simple utility that can pack and unpack files from and to simple archives.
+Targoviste has its own archive format that's really simple. You can browse the `examples` folder to see how it can be used.
+![Diagram](archiveformat.jpg)
 
 # Building
-To build Targoviste, please run `./build.sh`. Under Windows, you have install GCC and Bash.
+To build Targoviste, you just need to run `./build.sh`. It requires the `gcc` compiler installed.
 
 # License
 Targoviste is redistributed under MIT license.
