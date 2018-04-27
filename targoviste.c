@@ -186,7 +186,6 @@ void freeArchive(targoviste_archive * archive) {
     free(archive->files);
 }
 
-
 int loadFileFromArchive(targoviste_file * file, char * filename) {
     FILE * f;
     int i, size, startOffset;
@@ -258,6 +257,49 @@ targoviste_file * listFilesArchive(char * path, int * error, int * pSize) {
     
     fclose(f);
     return files;
+}
+
+targoviste_archive createArchive() {
+    targoviste_archive ret;
+    ret.amount = 0;
+    return ret;
+}
+
+targoviste_file createFile() {
+    targoviste_file ret;
+    ret.size = 0;
+    #ifndef CAST_MALLOC
+        ret.name = malloc(MAX_FILENAME_LEN);
+    #else
+        ret.name = (char *) malloc(MAX_FILENAME_LEN);
+    #endif
+    ret.buffer = NULL;
+    return ret;
+}
+
+int addFileToArchive(targoviste_archive dest, targoviste_file src) {
+    if(dest.amount == 0) {
+        #ifndef CAST_MALLOC
+            dest.files = malloc(sizeof(targoviste_file));
+        #else
+            dest.files = (targoviste_file *) malloc(sizeof(targoviste_file));
+        #endif
+        if(!dest.files) return 1;
+        dest.files[0] = src;
+    } else if(dest.amount == dest.amount) {
+        targoviste_file * copy = dest.files;
+        #ifndef CAST_MALLOC
+            dest.files = realloc(dest.files, sizeof(targoviste_file) * dest.amount);
+        #else
+            dest.files = (targoviste_file *) realloc(dest.files, sizeof(targoviste_file) * dest.amount);
+        #endif
+        if(!dest.files) return 1;
+        dest.files[dest.amount++] = src;
+    } else {
+        dest.files[dest.amount++] = src;
+        return 0;
+    }
+    return 2;
 }
 
 /** *** End: External functions *** */

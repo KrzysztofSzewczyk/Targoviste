@@ -120,4 +120,8 @@ void freeArchive(targoviste_archive * archive);
  */
 targoviste_file * listFilesArchive(char * path, int * error, int * amount);
 
+targoviste_archive createArchive();
+targoviste_file createFile();
+void addFileToArchive(targoviste_archive dest, targoviste_file src);
+
 #endif
