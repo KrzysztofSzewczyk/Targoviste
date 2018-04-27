@@ -137,11 +137,6 @@ targoviste_archive readArchive(char * file, int * error) {
     #endif
     
     for(i = 0; i < size; i++) {
-        #ifndef CAST_MALLOC
-            nbuf = malloc(MAX_FILENAME_LEN);
-        #else
-            nbuf = (char *) malloc(MAX_FILENAME_LEN);
-        #endif
         if(!nbuf)
             return (fclose(f), *error = 2, archive);
         nbuf = readString(f, MAX_FILENAME_LEN, 0);
@@ -196,14 +191,6 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     readi(f);
 
     for(i = 0; i < size; i++) {
-        #ifndef CAST_MALLOC
-            filenameBuffer = malloc(MAX_FILENAME_LEN);
-        #else
-            filenameBuffer = (char *) malloc(MAX_FILENAME_LEN);
-        #endif
-        
-        if(!filenameBuffer) return 2;
-        
         filenameBuffer = readString(f, MAX_FILENAME_LEN, 0);
         fgetc(f);
         
@@ -250,14 +237,6 @@ targoviste_file * listFilesArchive(char * path, int * error, int * pSize) {
     *pSize = amount;
     
     for(i = 0; i < amount; i++) {
-        #ifndef CAST_MALLOC
-            filenameBuffer = malloc(MAX_FILENAME_LEN);
-        #else
-            filenameBuffer = (char *) malloc(MAX_FILENAME_LEN);
-        #endif
-        
-        if(!filenameBuffer) return (*error = 2, NULL);
-        
         filenameBuffer = readString(f, MAX_FILENAME_LEN, 0);
         fgetc(f); readi(f); size = readi(f);
         files[i].buffer = NULL;
