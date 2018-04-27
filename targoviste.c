@@ -112,8 +112,6 @@ int writeArchive(targoviste_archive archive, char * file) {
     return 0;
 }
 
-/* *** End: External functions *** */
-
 targoviste_archive readArchive(char * file, int * error) {
     FILE * f;
     targoviste_archive archive;
