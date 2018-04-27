@@ -112,6 +112,8 @@ void freeArchive(targoviste_archive * archive);
  *            1 (file could not be opened)
  *            2 (out of memory)
  *            3 (invalid header)
+ *  amount: pointer to integer variable which will equal amount of
+ *          files in archive
  *
  *  returns: array of files. The retured files have a buffer value of NULL.
  *              In case of an error, NULL is returned.

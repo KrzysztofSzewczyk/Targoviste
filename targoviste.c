@@ -89,10 +89,7 @@ static int readi(FILE * f) {
     return num;
 }
 
-
 /* *** End: Internal functions *** */
-
-
 
 /* *** External functions *** */
 
@@ -114,7 +111,6 @@ int writeArchive(targoviste_archive archive, char * file) {
     fclose(f);
     return 0;
 }
-
 
 /* *** End: External functions *** */
 
@@ -177,7 +173,7 @@ targoviste_archive readArchive(char * file, int * error) {
     return archive;
 }
 
-void freeArchive(targoviste_archive archive) {
+void freeArchive(targoviste_archive * archive) {
     int i;
     for(i = 0; i < archive.amount; i++)
         free(archive.files[i].buffer),free(archive.files[i].name);
