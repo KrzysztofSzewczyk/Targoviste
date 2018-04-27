@@ -23,7 +23,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-/* Utility for converting number macros to string ones. */
+/* Utility for converting number macros to string macros. */
 #define xstr(s) str(s)
 #define str(s) #s
 
@@ -32,20 +32,21 @@ SOFTWARE.
 #include <stdio.h>
 #include <string.h>
 
-/* *** Internal functions block starts *** */
+/* *** Internal functions *** */
 
 /*
  * Function:  readString
  * --------------------
- * This function is reading string from specified stream with specified size and
- * delimiter. This function is returning pointer to string allocated on heap. Please
- * remember to free pointer. Warning: does not consume the delimiter.
+ * Reads a string from the given file stream with the specified size
+ * and delimiter. Returns a pointer to a string allocated on the heap.
+ * Remember to free the pointer afterwards. The returned string contains
+ * the delimiter.
  *
- *  f: File handle
- *  maxSize: Max string size (to get rid of BO attacks)
- *  delim: Delimiter
+ *  f: the file handle
+ *  maxSize: max string size (to prevent BO attacks)
+ *  delim: the string delimiter
  *
- *  returns: string that was read from stream.
+ *  returns: the resulting string read from the stream
  */
 static char * readString(FILE * f, int maxSize, char delim) {
     char * s, c;
@@ -69,16 +70,14 @@ static char * readString(FILE * f, int maxSize, char delim) {
 }
 
 /*
- * Function:  reado
+ * Function:  readi
  * --------------------
- * This function is reading number from specified stream. Does
- * consume null terminator. This is wrapper over readString.
- * Function is returning string pointer allocated on heap like
- * readString, so please free it after it's no longer used.
+ * Reads an integer from the given file stream.
+ * This function uses readString().
  *
- *  f: File handle
+ *  f: the file handle
  *
- *  returns: number that was read from stream.
+ *  returns: the integer read from the stream
  */
 static int readi(FILE * f) {
     char * s;
@@ -91,22 +90,12 @@ static int readi(FILE * f) {
 }
 
 
-/* *** Internal functions block ends *** */
+/* *** End: Internal functions *** */
 
-/* *** External functions block starts *** */
 
-/*
- * Function:  writeArchive
- * --------------------
- * This function is writing targoviste_archive structure to
- * specified filename. 
- * 
- *  archive: instance of targoviste_archive structure that
- *           needs to be written.
- *  file: file to write to.
- *
- *  returns: 1 on failure, 0 on success.
- */
+
+/* *** External functions *** */
+
 int writeArchive(targoviste_archive archive, char * file) {
     FILE * f;
     int i = 0, totalSize = 0;
@@ -126,24 +115,10 @@ int writeArchive(targoviste_archive archive, char * file) {
     return 0;
 }
 
-/*
- * Function:  readArchive
- * --------------------
- * This function is reading whole targoviste_archive structure from
- * specified filename. 
- *
- *  file: file to write to.
- *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
- *            0 (everything fine)
- *            1 (file could not be opened)
- *            2 (out of memory)
- *            3 (invalid header)
- *            4 (out of memory)
- *
- *  returns: archive read.
- */
-targoviste_archive readArchive(char * file, int *error) {
+
+/* *** End: External functions *** */
+
+targoviste_archive readArchive(char * file, int * error) {
     FILE * f;
     targoviste_archive archive;
     int size, i, j, header_end, * startOffsets;
@@ -202,23 +177,6 @@ targoviste_archive readArchive(char * file, int *error) {
     return archive;
 }
 
-/*
- * Function:  freeArchive
- * --------------------
- * This function is reading whole targoviste_archive structure from
- * specified filename. 
- *
- *  file: file to write to.
- *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
- *            0 (everything fine)
- *            1 (file could not be opened)
- *            2 (out of memory)
- *            3 (invalid header)
- *            4 (out of memory)
- *
- *  returns: archive read.
- */
 void freeArchive(targoviste_archive archive) {
     int i;
     for(i = 0; i < archive.amount; i++)
@@ -226,22 +184,7 @@ void freeArchive(targoviste_archive archive) {
     free(archive.files);
 }
 
-/*
- * Function:  loadFileFromArchive
- * --------------------
- * This function is loading single file from specified archive file.
- *
- *  file: target file
- *  filename: name of archive
- *
- *  returns: integer variable, which will be changed in
- *           case of error to either:
- *             0 (everything fine)
- *             1 (file could not be opened)
- *             2 (out of memory)
- *             3 (invalid header)
- *             4 (out of memory)
- */
+
 int loadFileFromArchive(targoviste_file * file, char * filename) {
     FILE * f;
     int i, size, startOffset;
@@ -290,23 +233,7 @@ int loadFileFromArchive(targoviste_file * file, char * filename) {
     return 0;
 }
 
-/*
- * Function:  listFilesArchive
- * --------------------
- * This function is listing all files in archive,
- *
- *  path: path to archive
- *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
- *            0 (everything fine)
- *            1 (file could not be opened)
- *            2 (out of memory)
- *            3 (invalid header)
- *
- *  returns: array of files. Warning: files have buffer set as NULL!
- *           on error, NULL is returned!
- */
-targoviste_file * listFilesArchive(char * path, int * error) {
+targoviste_file * listFilesArchive(char * path, int * error, int * pSize) {
     FILE * f;
     int amount, size, i;
     char * filenameBuffer;
@@ -314,6 +241,9 @@ targoviste_file * listFilesArchive(char * path, int * error) {
     
     f = fopen(path, "rb");
     if(!f) return (*error = 1, NULL);
+    
+    if(fgetc(f)!='T' || fgetc(f)!='A' || fgetc(f)!='R')
+        return (*error = 3, NULL);
     
     amount = readi(f);
     
@@ -323,7 +253,9 @@ targoviste_file * listFilesArchive(char * path, int * error) {
         files = (targoviste_file *) malloc(sizeof(targoviste_file) * amount);
     #endif
     
-    for(i = 0; i < size; i++) {
+    *pSize = amount;
+    
+    for(i = 0; i < amount; i++) {
         #ifndef CAST_MALLOC
             filenameBuffer = malloc(MAX_FILENAME_LEN);
         #else
@@ -342,3 +274,5 @@ targoviste_file * listFilesArchive(char * path, int * error) {
     fclose(f);
     return files;
 }
+
+/** *** End: External functions *** */

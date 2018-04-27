@@ -28,6 +28,7 @@ ar rcs libtargoviste.a targoviste.o
 
 gcc -I. -L. examples/read.c -o examples/read -ltargoviste
 gcc -I. -L. examples/write.c -o examples/write -ltargoviste
+gcc -I. -L. examples/list.c -o examples/list -ltargoviste
 
 echo "Build done!"
 

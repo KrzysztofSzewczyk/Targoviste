@@ -43,14 +43,13 @@ typedef struct {
 /*
  * Function:  writeArchive
  * --------------------
- * This function is writing targoviste_archive structure to
- * specified filename. 
+ * Writes a targoviste_archive structure to the file
+ * with the given filename.
  * 
- *  archive: instance of targoviste_archive structure that
- *           needs to be written.
- *  file: file to write to.
+ *  archive: the instance of targoviste_archive structure to be written
+ *  file: the file to write to
  *
- *  returns: 1 on failure, 0 on success.
+ *  returns: 1 on failure, 0 on success
  */
 int writeArchive(targoviste_archive archive, char * file);
 
@@ -58,19 +57,19 @@ int writeArchive(targoviste_archive archive, char * file);
 /*
  * Function:  readArchive
  * --------------------
- * This function is reading whole targoviste_archive structure from
- * specified filename. 
+ * Reads a targoviste_archive structure from the file
+ * with the given filename.
  *
- *  file: file to write to.
- *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
+ *  file: the file to write to
+ *  error: a pointer to an integer variable,
+ *      whose value indicates reading errors and can be:
  *            0 (everything fine)
  *            1 (file could not be opened)
  *            2 (out of memory)
  *            3 (invalid header)
  *            4 (out of memory)
  *
- *  returns: archive read.
+ *  returns: the archive read from the file
  */
 targoviste_archive readArchive(char * file, int *error);
 
@@ -78,9 +77,10 @@ targoviste_archive readArchive(char * file, int *error);
 /*
  * Function:  loadFileFromArchive
  * --------------------
- * This function is loading single file from specified archive file.
+ * Loads a single file with the specified filename
+ * from the given targoviste_file.
  *
- *  file: target file
+ *  file: a file pointer that the output file will be assigned to
  *  filename: name of archive
  *
  *  returns: integer variable, which will be changed in
@@ -93,42 +93,29 @@ targoviste_archive readArchive(char * file, int *error);
  */
 int loadFileFromArchive(targoviste_file * file, char * filename);
 
-
 /*
  * Function:  freeArchive
  * --------------------
- * This function is reading whole targoviste_archive structure from
- * specified filename. 
- *
- *  file: file to write to.
- *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
- *            0 (everything fine)
- *            1 (file could not be opened)
- *            2 (out of memory)
- *            3 (invalid header)
- *            4 (out of memory)
- *
- *  returns: archive read.
+ * Free targoviste_archive structure
  */
-void freeArchive(targoviste_archive archive);
+void freeArchive(targoviste_archive * archive);
 
 /*
- * Function:  listFilesArchive
+ * Function:  listFilesInArchive
  * --------------------
- * This function is listing all files in archive,
+ * Returns an array of all files in the archive with the given path.
  *
  *  path: path to archive
  *  error: pointer to integer variable, which will be changed in
- *         case of error to either:
+ *         case of an error to:
  *            0 (everything fine)
  *            1 (file could not be opened)
  *            2 (out of memory)
  *            3 (invalid header)
  *
- *  returns: array of files. Warning: files have buffer set as NULL!
- *           on error, NULL is returned!
+ *  returns: array of files. The retured files have a buffer value of NULL.
+ *              In case of an error, NULL is returned.
  */
-targoviste_file * listFilesArchive(char * path, int * error);
+targoviste_file * listFilesArchive(char * path, int * error, int * amount);
 
 #endif
