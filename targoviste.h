@@ -143,6 +143,6 @@ targoviste_file createFile();
  *
  * returns 0 on success and 1 on error.
  */
-void addFileToArchive(targoviste_archive dest, targoviste_file src);
+int addFileToArchive(targoviste_archive dest, targoviste_file src);
 
 #endif
